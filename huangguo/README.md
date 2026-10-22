@@ -7,7 +7,16 @@
 
 普通账号可以使用。导入后手动启用，在独立「插件」页或设置中的「浏览」进入；收藏、观看进度与账号同步继续由 N果管理，插件身份与内置源分开保存。
 
-**需要包含 `builtinSource` 契约的配套 N果 App。当前为本地验收版本，尚未推送或发布，不能直接用未更新的线上 Raw 地址安装。** 本地可从文件或粘贴脚本导入。旧 App 无法启用此绑定；仅更新 JS 不能补齐宿主能力。
+**需要包含 `builtinSource` 契约的配套 N果 App。该 App 改动目前仅在本地提交，尚未发布。** 旧 App 无法启用此绑定；仅导入或更新 JS 不能补齐宿主能力。
+
+配套 App 中可在「设置 → JS 源插件 → 从 URL 导入」使用以下地址，保存后手动启用：
+
+| 插件 | 导入地址 |
+| --- | --- |
+| 黄果视频 | `https://raw.githubusercontent.com/karlbilet/nshort-plugins/main/huangguo/huangguo-video.js` |
+| 黄果 AI | `https://raw.githubusercontent.com/karlbilet/nshort-plugins/main/huangguo/huangguo-ai.js` |
+
+也可以从本地文件或粘贴脚本导入。普通账号需要拥有对应源权限。
 
 ## 工作方式
 
