@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "description": "Synthetic inputs; six comment signing headers only. The body stub is intentionally empty. Never send these fixtures.",
+  "vectors": [
+    {
+      "name": "reference",
+      "url": "https://api5-normal-sinfonlineb.fqnovel.com/novel/commentapi/comment/list/700002/v1/?aid=8662&device_id=700003",
+      "method": "POST",
+      "body_utf8": "",
+      "nonce": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "unix_seconds": 1773662280,
+      "expected": {
+        "X-Argus": "PMxPj+JImxTKEfQuAsVmWpqWbk6ptNvvFsIJbNFMxOQxhVihWhCZbh3JphV/tvUG7ABmRtDIxS2tVq7M9EF+LUTvnjlIF4oXQZYJsihMmASmjnLwRmXqU6nLasLwya7gsESxF+40XOiFB33K2lzJU0NY2CgrA2G58uGjG0TG0GtLwpE3RXTEMO0GUwaKqaCFx4yb01vcH+N+obpbQAuycKGF",
+        "X-Gorgon": "840440e20000e5534737ff447dece3898d8546b77f54303100d8",
+        "X-Khronos": "1773662280",
+        "X-Ladon": "AwQFBllQi0qfAHVP9XxZtrYsmLNnfrwAzFAlv0Cqi9J16ndL",
+        "X-SS-Req-Ticket": "1773662280000",
+        "X-SS-STUB": ""
+      }
+    },
+    {
+      "name": "body-is-not-hashed",
+      "url": "https://api5-normal-sinfonlineb.fqnovel.com/novel/commentapi/comment/list/700002/v1/?aid=8662&device_id=700003",
+      "method": "POST",
+      "body_utf8": "{\"group_id\":\"700002\",\"count\":90}",
+      "nonce": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "unix_seconds": 1773662280,
+      "expected": {
+        "X-Argus": "PMxPj+JImxTKEfQuAsVmWpqWbk6ptNvvFsIJbNFMxOQxhVihWhCZbh3JphV/tvUG7ABmRtDIxS2tVq7M9EF+LUTvnjlIF4oXQZYJsihMmASmjnLwRmXqU6nLasLwya7gsESxF+40XOiFB33K2lzJU0NY2CgrA2G58uGjG0TG0GtLwpE3RXTEMO0GUwaKqaCFx4yb01vcH+N+obpbQAuycKGF",
+        "X-Gorgon": "840440e20000e5534737ff447dece3898d8546b77f54303100d8",
+        "X-Khronos": "1773662280",
+        "X-Ladon": "AwQFBllQi0qfAHVP9XxZtrYsmLNnfrwAzFAlv0Cqi9J16ndL",
+        "X-SS-Req-Ticket": "1773662280000",
+        "X-SS-STUB": ""
+      }
+    },
+    {
+      "name": "raw-query-encoding",
+      "url": "https://api5-normal-sinfonlineb.fqnovel.com/novel/commentapi/comment/list/700002/v1/?device_id=700003&aid=86%36%32&text=%e4%b8%ad+%2B&aid=9999",
+      "method": "POST",
+      "body_utf8": "{}",
+      "nonce": [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "unix_seconds": 0,
+      "expected": {
+        "X-Argus": "PMyH6+Uwkn1w+rAMn6MGOzSeXu8Q9s8p7vxHCBs9pOaTWJzgFYhQYQoufHh/Ya7sCyc1swCkdEF95v/drtG9gUaQHsPB3WhQwY/8ED+i7J8Q0BNgL7sDE/3trbfvlzV/m3DQrjqWOxv7XiNmuFDkXQFNIhQzPV5uV7BbJqlIBSehBx4fxyY3+lKGTDxa6N5AtUaHA4CGPh+UrxR6AAP9Mdlx",
+        "X-Gorgon": "840480ef0000dbd5d86f1d9a0de59c853b6eb3227822e4ce42d5",
+        "X-Khronos": "0",
+        "X-Ladon": "/////y8dyzYuVWBcv3TjPfzlYqgywKtUnZxTh9tKA8s7scuQ",
+        "X-SS-Req-Ticket": "0",
+        "X-SS-STUB": ""
+      }
+    },
+    {
+      "name": "raw-query-order",
+      "url": "https://api5-normal-sinfonlineb.fqnovel.com/novel/commentapi/comment/list/700002/v1/?aid=8662&device_id=700003&text=%E4%B8%AD%20%2B",
+      "method": "POST",
+      "body_utf8": "{}",
+      "nonce": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "unix_seconds": 4294967295,
+      "expected": {
+        "X-Argus": "PMyH6+Uwkn1w+rAMn6MGOzSeMeB99BqlEzz+jmV1lGLke1Hle5ZqXNpbRjZzIgGFl9Vk+MzOLM6rDgHk1VWq2VtcM/oqx9ma3HkMGCWhyc9P8x4gt9aPtkD/lsOspbek3sbpa1aTznM59MuIC8LuStOtPUxTzPW4tvBgJmSYf1/pUZzGCFkOOl1N057psHLxdNqEU1zSVDLff6IN/kWeTd4a",
+        "X-Gorgon": "840420e00000d2b5f1780f45f43fb6f28a41f9de4a4ff41a2020",
+        "X-Khronos": "4294967295",
+        "X-Ladon": "AAAAAEzNsbTfHarM/ohgv5LAkQRgSys9XxPAljmWAE//Otwl",
+        "X-SS-Req-Ticket": "4294967295000",
+        "X-SS-STUB": ""
+      }
+    },
+    {
+      "name": "empty-query",
+      "url": "https://api5-normal-sinfonlineb.fqnovel.com/novel/commentapi/comment/list/700002/v1/",
+      "method": "POST",
+      "body_utf8": "",
+      "nonce": [
+        0,
+        255,
+        1,
+        254,
+        2,
+        253,
+        3,
+        252,
+        4,
+        251,
+        5
+      ],
+      "unix_seconds": 1773662280,
+      "expected": {
+        "X-Argus": "PMxhgUKIXtho/6stSub0VASKJDoVY13IeJ5USEZ0fLHWQTZwwsZyvJbD4hiJOdNZLUWgf45O/cGTWm2nsEDeGW4QS8zl9Ug4im1dbhYL4DnHNK9mR2gsHLQqwmOjhtRYrKGWTkMHRWbhtpM1WZt6IopAE99boD+nEDBDvoELEyC+j2BLzvwO3lhLKK1FgUkIa4GInmsqcNpmiwXUApiC1HpwFBrBKKi2idUW4THPeMaJ2A==",
+        "X-Gorgon": "840420ef00005ec632b3cbffb2d97cd792fcbe163e45891966c9",
+        "X-Khronos": "1773662280",
+        "X-Ladon": "Af4C/cPufXV7iwQ4x9lA4XuM4qpsywdf6X6GcRwdYzSIMn8w",
+        "X-SS-Req-Ticket": "1773662280000",
+        "X-SS-STUB": ""
+      }
+    },
+    {
+      "name": "multi-block-query",
+      "url": "https://api5-normal-sinfonlineb.fqnovel.com/novel/commentapi/comment/list/700002/v1/?aid=8662&fixture=ab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2Bab%2B",
+      "method": "POST",
+      "body_utf8": "{}",
+      "nonce": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "unix_seconds": 1773662281,
+      "expected": {
+        "X-Argus": "PMxPj+JImxTKEfQuAsVmWpqWlfsJreWRLgViz6ArhXTODuTWX7km4CBJEzjEot2hWoYRX1TD6Lp1JwajG8RY66c97i4275Edimn3sQG1j2KntfHUga/Osg6wjussReyHPQHKUnglMQuWF+dyajSLEJOOy51tnY8S+UwkOTrTYKeYQn2uMoor93Bj44wwaZbLpSm9aRdX4FZVgdqJOU6wzICk",
+        "X-Gorgon": "840420e10000a2f44414fe74163888622f1454edf868d854b91e",
+        "X-Khronos": "1773662281",
+        "X-Ladon": "AgMEBaCVpVeOxuStU+5cIZq25jeUXoV+4yYWolKDMC0DpDXW",
+        "X-SS-Req-Ticket": "1773662281000",
+        "X-SS-STUB": ""
+      }
+    },
+    {
+      "name": "form-query-semicolon",
+      "url": "https://fixture.example/comment?aid=invalid;pair&aid=8662",
+      "method": "POST",
+      "body_utf8": "",
+      "nonce": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "unix_seconds": 1773662280,
+      "expected": {
+        "X-Argus": "PMxPj+JImxTKEfQuAsVmWpqWMF9go8VxoQOV4s9S1ULthUErHkUTIgSNglJ2Us+Nyx74Mg95ZrFHa2Hohx8SSrPJPfnDajw+b4YoRj6eZ3EBjTzVshOch2B7qNS1kAeBFLVhiv+/I+A91zm/Kq7qKgsdslNZDneVdAe3VSlCCZ/lSU9h7waiPXfQtnRSgSZiDN6XTgGAUBOM4ScbCjKsCUps",
+        "X-Gorgon": "840440e2000037c6c9e5ff447dece3898d8546b77f5430310093",
+        "X-Khronos": "1773662280",
+        "X-Ladon": "AwQFBllQi0qfAHVP9XxZtrYsmLNnfrwAzFAlv0Cqi9J16ndL",
+        "X-SS-Req-Ticket": "1773662280000",
+        "X-SS-STUB": ""
+      }
+    }
+  ]
+}

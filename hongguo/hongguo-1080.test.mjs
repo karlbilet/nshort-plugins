@@ -13,7 +13,7 @@ function runtime(fetch) {
 }
 
 test('manifest declares the actual poster host without wildcard permissions', () => {
-  assert.equal(manifest.version, '1.1.0');
+  assert.equal(manifest.version, '1.2.0');
   assert.ok(manifest.hosts.includes('p3-reading-sign.fqnovelpic.com'));
   assert.ok(manifest.hosts.includes('v3-reading-videocdn302.qznovelvod.com'));
   assert.ok(!manifest.hosts.some(host => host.includes('*')));
@@ -148,4 +148,64 @@ test('clear App candidate remains first and does not request the web page', asyn
   ]}}})};});
   assert.equal((await context.nshort.play({id:'123',episode:{id:'456'}})).quality,1080);
   assert.equal(requests,1);
+});
+
+
+const commentVectors = JSON.parse(readFileSync(new URL('./fixtures/comment-signature.json', import.meta.url), 'utf8')).vectors;
+const danmakuPages = JSON.parse(readFileSync(new URL('./fixtures/danmaku-pages.json', import.meta.url), 'utf8')).cases;
+
+test('danmaku fetches the requested episode and preserves bounded timeline metadata', async () => {
+  const calls = [];
+  const context = runtime(async (url, options) => {
+    calls.push({url, options});
+    return {text:async()=>JSON.stringify({code:0,data:{data_list:[
+      {comment:{comment_id:'one',common:{group_id:'456',status:1,content:{text:'原弹幕'}},expand:{offset_time:30500}}},
+    ],extra:{next_query_danmaku_list_time:60000}}})};
+  });
+  const page = await context.nshort.danmaku({id:'123',episodeId:'456',startMs:30000,durationMs:65000});
+  assert.deepEqual(JSON.parse(JSON.stringify(page)), {
+    episodeId:'456',startMs:30000,nextMs:60000,items:[{id:'one',text:'原弹幕',timeMs:30500}],
+  });
+  assert.equal(calls.length,1);
+  const request = calls[0];
+  assert.equal(new URL(request.url).pathname,'/novel/commentapi/comment/list/456/v1/');
+  assert.equal(request.options.method,'POST');
+  const body = JSON.parse(request.options.body);
+  assert.equal(body.group_id,'456');
+  assert.equal(body.comment_type,20);
+  assert.equal(body.count,90);
+  assert.deepEqual(body.business_param,{book_id:'123',start_offset_time:30000,playlet_item_duration:65000,need_danmaku_guide_type:[1,3,4,2]});
+  assert.equal(request.options.headers['X-SS-STUB'],'');
+  for (const name of ['X-Argus','X-Gorgon','X-Ladon','X-Khronos']) assert.ok(request.options.headers[name]);
+  assert.equal(request.options.headers.Authorization,undefined);
+  assert.equal(request.options.headers.Cookie,undefined);
+});
+
+test('comment signatures match all builtin synthetic vectors without hashing the body', () => {
+  const context = runtime();
+  for (const v of commentVectors) {
+    const url = new URL(v.url);
+    const pairs = url.search.slice(1).split('&').filter(pair=>!pair.includes(';'));
+    const aid = new URLSearchParams(pairs.join('&')).get('aid') || '';
+    const actual = context.signCommentRequest({query:url.search.slice(1), aid, timestamp:v.unix_seconds,nonce:Uint8Array.from(v.nonce)});
+    assert.deepEqual(JSON.parse(JSON.stringify(actual)),v.expected,v.name);
+  }
+});
+
+test('danmaku matches builtin parser cases including empty, malformed, unicode and episode isolation', async () => {
+  for (const v of danmakuPages) {
+    const context = runtime(async()=>({text:async()=>JSON.stringify(v.raw)}));
+    const args = {id:'700001',episodeId:v.context.episode_id,startMs:v.context.start_ms,durationMs:v.context.duration_ms};
+    if (v.expected === null) await assert.rejects(()=>context.nshort.danmaku(args),undefined,v.name);
+    else assert.deepEqual(JSON.parse(JSON.stringify(await context.nshort.danmaku(args))),v.expected,v.name);
+  }
+});
+
+test('danmaku uses cursor window fallback and never hides transport or malformed failures as empty', async () => {
+  const context = runtime(async()=>({text:async()=>JSON.stringify({code:0,data:{data_list:[],common_list_info:{cursor:JSON.stringify({start_offset_time:30000,end_offset_time:60000})}}})}));
+  assert.equal((await context.nshort.danmaku({id:'123',episodeId:'456',startMs:30000,durationMs:65000})).nextMs,60000);
+  for (const fetch of [async()=>{throw Error('network');},async()=>({text:async()=>''}),async()=>({text:async()=>'{}'})]) {
+    const failed = runtime(fetch);
+    await assert.rejects(()=>failed.nshort.danmaku({id:'123',episodeId:'456',startMs:0,durationMs:65000}));
+  }
 });

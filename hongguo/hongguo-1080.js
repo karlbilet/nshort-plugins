@@ -1,4 +1,4 @@
-// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.1.0","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","p3-reading-sign.fqnovelpic.com","snssdk.com","toutiaovod.com","douyinvod.com","v3-reading-videocdn302.qznovelvod.com"]}
+// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.2.0","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","p3-reading-sign.fqnovelpic.com","snssdk.com","toutiaovod.com","douyinvod.com","v3-reading-videocdn302.qznovelvod.com"]}
 // 纯 JS 复现官方 x-argus / x-gorgon / x-ladon / x-khronos，不加载 libmetasec_ml.so。
 // App 高清/CENC 优先，失败回退同集公开网页；需要支持 cencKey 契约的 N果版本。
 // 红果播放签名：纯 JS 实现（无 Node/原生依赖，可直接跑在 nshort QuickJS 插件里）
@@ -295,6 +295,10 @@ function argus(query, body, timestamp, deviceId, nonce) {
   msg = protoBytes(msg, 23, environment);
   msg = protoVarint(msg, 25, 2);
 
+  return sealArgus(msg);
+}
+
+function sealArgus(msg) {
   let data = pad16(msg);
 
   const seed = concat(ARGUS_KEY, Uint8Array.from([0x3c, 0xcc, 0x56, 0x7b]), ARGUS_KEY);
@@ -336,7 +340,7 @@ function argus(query, body, timestamp, deviceId, nonce) {
 }
 
 // 官方播放接口 x-ladon
-function ladon(aid, timestamp, prefix) {
+function ladon(aid, timestamp, prefix, messageAid = aid) {
   const digestBytes = utf8(hexString(md5(concat(prefix, utf8(aid)))));
   let left = u64le(digestBytes, 0);
   let right = u64le(digestBytes, 8);
@@ -349,7 +353,7 @@ function ladon(aid, timestamp, prefix) {
     left = (mixed ^ rotl64(left, 3)) & MASK64;
     right = queue.shift();
   }
-  let data = pad16(utf8(`${timestamp}-1611921764-${aid}`));
+  let data = pad16(utf8(`${timestamp}-1611921764-${messageAid}`));
   for (let off = 0; off < data.length; off += 16) {
     let l = u64le(data, off), r = u64le(data, off + 8);
     for (const key of keys) {
@@ -816,6 +820,118 @@ async function webPlay(seriesID, episodeID) {
   return { url, quality: height };
 }
 
+
+// 评论接口使用独立签名；不能用播放签名或对正文计算 STUB。
+// 与 N果内置 CommentSigner 的合成向量保持一致。
+function signCommentRequest({query = "", aid = AID, timestamp = Math.floor(Date.now() / 1000), nonce = null} = {}) {
+  const n = nonce || Uint8Array.from(Array.from({length:11}, () => Math.floor(Math.random() * 256)));
+  const ts = timestamp >>> 0;
+  const head2 = (n[0] % 7 + 1) << 5, head3 = 0xe0 | (n[1] & 15);
+  const seed = new Uint8Array(20);
+  seed.set(md5(utf8(query)).subarray(0,4));
+  seed.set([0,1,7,4],12);
+  new DataView(seed.buffer).setUint32(16,ts,false);
+  const key = [0x4a,0,0x16,head3,0x47,0x6c,0,head2];
+  const box = Uint8Array.from(Array.from({length:256},(_,i)=>i));
+  let j = 0;
+  for (let i = 0; i < 256; i++) {
+    j = (j + box[i] + key[i & 7]) & 255;
+    box[i] = box[j];
+  }
+  j = 0;
+  for (let at = 0; at < seed.length; at++) {
+    const i = at + 1;
+    j = (j + box[i]) & 255;
+    box[i] = box[j];
+    seed[at] ^= box[(box[i] + box[j]) & 255];
+  }
+  for (let i = 0; i < seed.length; i++) seed[i] = reverse8(rotl8(seed[i],4) ^ seed[(i+1)%seed.length]) ^ 0xeb;
+
+  let msg = protoVarint(new Uint8Array(0),1,0x20200929 * 2);
+  msg = protoVarint(msg,2,2);
+  msg = protoVarint(msg,3,new DataView(Uint8Array.from(n).buffer).getUint32(6,true));
+  for (const [field,value] of [[4,"3019"],[6,"1611921764"],[7,"6.8.1.32"],[8,"v04.07.01-ml-android"]]) msg = protoBytes(msg,field,utf8(value));
+  msg = protoVarint(msg,9,135135744);
+  msg = protoBytes(msg,10,new Uint8Array(8));
+  msg = protoVarint(msg,12,ts * 2);
+  msg = protoBytes(msg,13,sm3(new Uint8Array(16)).subarray(0,6));
+  msg = protoBytes(msg,14,sm3(utf8(query)).subarray(0,6));
+  let counters = protoVarint(new Uint8Array(0),1,2 + (n[10] % 49) * 2);
+  for (const field of [2,3,4]) counters = protoVarint(counters,field,1388734);
+  msg = protoBytes(msg,15,counters);
+  msg = protoBytes(msg,20,utf8("none"));
+  msg = protoVarint(msg,21,738);
+  return {
+    "X-Gorgon":hexString(concat(Uint8Array.from([0x84,4,head2,head3,0,0]),seed)),
+    "X-Khronos":String(ts), "X-SS-Req-Ticket":String(ts * 1000), "X-SS-STUB":"",
+    "X-Argus":sealArgus(msg), "X-Ladon":ladon(aid,ts,n.subarray(2,6),"3019"),
+  };
+}
+
+const DANMAKU_MAX_MS = 86400000;
+function danmakuInteger(value) {
+  if (typeof value === "string") {
+    if (!/^\d+$/.test(value)) return null;
+    value = Number(value);
+  }
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= DANMAKU_MAX_MS ? value : null;
+}
+
+function danmakuContext({id,episodeId,startMs,durationMs} = {}) {
+  // IDs must remain strings: numeric coercion can lose 64-bit precision.
+  const validID = value => typeof value === "string" && /^\d{1,32}$/.test(value);
+  if (!validID(id) || !validID(episodeId) || !Number.isSafeInteger(startMs) || startMs < 0 ||
+      !Number.isSafeInteger(durationMs) || durationMs <= startMs || durationMs > DANMAKU_MAX_MS) throw Error("弹幕请求参数无效");
+  return {id,episodeId,startMs,durationMs};
+}
+
+function parseDanmaku(result,{episodeId,startMs,durationMs}) {
+  const data = result && result.data;
+  if (!result || danmakuInteger(result.code) !== 0 || !data || !Array.isArray(data.data_list)) throw Error("弹幕响应格式无效");
+  let next = danmakuInteger(data.extra && data.extra.next_query_danmaku_list_time);
+  if (!data.extra || !Object.prototype.hasOwnProperty.call(data.extra,"next_query_danmaku_list_time")) {
+    const raw = data.common_list_info && data.common_list_info.cursor;
+    let cursor;
+    if (typeof raw === "string" && utf8(raw).length <= 8192) {
+      try { cursor = JSON.parse(raw); } catch (_) {}
+    }
+    next = cursor && danmakuInteger(cursor.start_offset_time) === startMs ? danmakuInteger(cursor.end_offset_time) : null;
+  }
+  if (next === null || next === undefined || next <= startMs) throw Error("弹幕时间段格式无效");
+  const end = Math.min(next,durationMs), seen = new Set(), items = [];
+  for (const row of data.data_list) {
+    const comment = row && row.comment, common = comment && comment.common;
+    if (!common || common.group_id !== episodeId || danmakuInteger(common.status) !== 1) continue;
+    const timeMs = danmakuInteger(comment.expand && comment.expand.offset_time);
+    const id = comment.comment_id, rawText = common.content && common.content.text;
+    if (typeof id !== "string" || !id || Array.from(id).length > 120 || seen.has(id) || timeMs === null ||
+        timeMs < startMs || timeMs >= end || typeof rawText !== "string") continue;
+    // Match builtin Unicode scalar limits and whitespace; preserve a literal BOM.
+    const text = rawText.replace(/[\x00-\x1f\x7f-\x9f\u2028\u2029]/g," ").replace(/^[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]+|[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]+$/g,"");
+    if (!text) continue;
+    seen.add(id);
+    items.push({id,text:Array.from(text).slice(0,180).join(""),timeMs});
+    if (items.length === 90) break;
+  }
+  items.sort((a,b)=>a.timeMs-b.timeMs);
+  return {episodeId,startMs,nextMs:end,items};
+}
+
+async function danmaku(input) {
+  const context = danmakuContext(input);
+  const query = baseQuery() + "&_rticket=" + Date.now();
+  const headers = signCommentRequest({query});
+  headers["Accept"] = "application/json";
+  headers["User-Agent"] = "com.phoenix.read/73532 (Linux; U; Android 16; zh_CN; 25053RT47C; Build/BP2A.250605.031.A3; Cronet/TTNetVersion:04657795 2026-01-23 QuicVersion:c67e9834 2025-09-08)";
+  headers["Content-Type"] = "application/json; charset=utf-8";
+  const body = {comment_source:601,server_channel:1000,group_id:context.episodeId,group_type:30,
+    comment_type:20,sort:1,count:90,cursor:"",aid:8662,compliance_status:0,
+    business_param:{book_id:context.id,start_offset_time:context.startMs,playlet_item_duration:context.durationMs,need_danmaku_guide_type:[1,3,4,2]}};
+  const response = await fetch(API + "/novel/commentapi/comment/list/" + context.episodeId + "/v1/?" + query,
+    {method:"POST",headers,body:JSON.stringify(body)});
+  return parseDanmaku(JSON.parse(await response.text()),context);
+}
+
 globalThis.nshort = {
   catalog: async (input) => catalog(input || {}),
   search: async (input) => search(input || {}),
@@ -841,6 +957,6 @@ globalThis.nshort = {
     }
     return webPlay(seriesID, episodeID);
   },
-  danmaku: async () => ({ items: [] }),
+  danmaku: async (input) => danmaku(input),
   seriesSeasons: async () => ({ items: [] }),
 };

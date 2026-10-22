@@ -1,0 +1,4645 @@
+{
+  "version": 1,
+  "description": "raw upstream -> normalized page; expected=null requires an error, never a successful empty page. Text length uses Unicode scalar values.",
+  "cases": [
+    {
+      "name": "clean-dedupe-filter-stable-sort",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "later",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "后"
+                  }
+                },
+                "expand": {
+                  "offset_time": 15000
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "7699999999999999999",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "  <b>你好</b>\n\u0000  结束　"
+                  }
+                },
+                "expand": {
+                  "offset_time": 0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "later",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "重复"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "tie-first",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "甲"
+                  }
+                },
+                "expand": {
+                  "offset_time": 100
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "tie-second",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "乙"
+                  }
+                },
+                "expand": {
+                  "offset_time": 100
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "wrong",
+                "common": {
+                  "group_id": "999",
+                  "status": 1,
+                  "content": {
+                    "text": "串集"
+                  }
+                },
+                "expand": {
+                  "offset_time": 0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "hidden",
+                "common": {
+                  "group_id": "700002",
+                  "status": 2,
+                  "content": {
+                    "text": "隐藏"
+                  }
+                },
+                "expand": {
+                  "offset_time": 0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "missing",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "普通评论"
+                  }
+                },
+                "expand": {
+                  "offset_time": null
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "fraction",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "小数"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1.2
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "before",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "早"
+                  }
+                },
+                "expand": {
+                  "offset_time": -1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "end",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "末"
+                  }
+                },
+                "expand": {
+                  "offset_time": 30000
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "empty",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "\u0000　"
+                  }
+                },
+                "expand": {
+                  "offset_time": 0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": 7699999999999999999,
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "数字ID不可用"
+                  }
+                },
+                "expand": {
+                  "offset_time": 0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "number-group",
+                "common": {
+                  "group_id": 700002,
+                  "status": 1,
+                  "content": {
+                    "text": "不可用"
+                  }
+                },
+                "expand": {
+                  "offset_time": 0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "boolean-status",
+                "common": {
+                  "group_id": "700002",
+                  "status": true,
+                  "content": {
+                    "text": "不可用"
+                  }
+                },
+                "expand": {
+                  "offset_time": 0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "boolean-time",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "不可用"
+                  }
+                },
+                "expand": {
+                  "offset_time": true
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": [
+          {
+            "id": "7699999999999999999",
+            "text": "<b>你好</b>     结束",
+            "timeMs": 0
+          },
+          {
+            "id": "tie-first",
+            "text": "甲",
+            "timeMs": 100
+          },
+          {
+            "id": "tie-second",
+            "text": "乙",
+            "timeMs": 100
+          },
+          {
+            "id": "later",
+            "text": "后",
+            "timeMs": 15000
+          }
+        ]
+      }
+    },
+    {
+      "name": "unicode-scalar-180-no-ellipsis",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "long",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é"
+                  }
+                },
+                "expand": {
+                  "offset_time": 10
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": [
+          {
+            "id": "long",
+            "text": "😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é😀é",
+            "timeMs": 10
+          }
+        ]
+      }
+    },
+    {
+      "name": "string-integers-and-final-clamp",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 30000,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "last",
+                "common": {
+                  "group_id": "700002",
+                  "status": "1",
+                  "content": {
+                    "text": "最后"
+                  }
+                },
+                "expand": {
+                  "offset_time": "59999"
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": "90000"
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 30000,
+        "nextMs": 60000,
+        "items": [
+          {
+            "id": "last",
+            "text": "最后",
+            "timeMs": 59999
+          }
+        ]
+      }
+    },
+    {
+      "name": "success-empty",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 30000,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 90000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 30000,
+        "nextMs": 60000,
+        "items": []
+      }
+    },
+    {
+      "name": "only-wrong-groups-is-empty",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "foreign",
+                "common": {
+                  "group_id": "1",
+                  "status": 1,
+                  "content": {
+                    "text": "串集"
+                  }
+                },
+                "expand": {
+                  "offset_time": 100
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": []
+      }
+    },
+    {
+      "name": "first-90-valid-then-stable-sort",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "0",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 100
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "1",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 99
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "2",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 98
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "3",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 97
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "4",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 96
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "5",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 95
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "6",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 94
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "7",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 93
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "8",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 92
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "9",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 91
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "10",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 90
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "11",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 89
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "12",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 88
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "13",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 87
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "14",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 86
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "15",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 85
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "16",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 84
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "17",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 83
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "18",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 82
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "19",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 81
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "20",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 80
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "21",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 79
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "22",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 78
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "23",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 77
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "24",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 76
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "25",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 75
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "26",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 74
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "27",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 73
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "28",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 72
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "29",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 71
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "30",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 70
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "31",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 69
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "32",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 68
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "33",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 67
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "34",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 66
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "35",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 65
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "36",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 64
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "37",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 63
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "38",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 62
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "39",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 61
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "40",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 60
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "41",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 59
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "42",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 58
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "43",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 57
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "44",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 56
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "45",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 55
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "46",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 54
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "47",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 53
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "48",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 52
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "49",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 51
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "50",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 50
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "51",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 49
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "52",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 48
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "53",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 47
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "54",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 46
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "55",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 45
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "56",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 44
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "57",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 43
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "58",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 42
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "59",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 41
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "60",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 40
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "61",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 39
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "62",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 38
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "63",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 37
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "64",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 36
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "65",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 35
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "66",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 34
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "67",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 33
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "68",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 32
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "69",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 31
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "70",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 30
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "71",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 29
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "72",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 28
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "73",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 27
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "74",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 26
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "75",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 25
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "76",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 24
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "77",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 23
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "78",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 22
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "79",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 21
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "80",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 20
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "81",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 19
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "82",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 18
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "83",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 17
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "84",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 16
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "85",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 15
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "86",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 14
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "87",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 13
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "88",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 12
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "89",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 11
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "90",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 10
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "91",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 9
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "92",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 8
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "93",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 7
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "94",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 6
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "95",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 5
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "96",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 4
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "97",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 3
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "98",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 2
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "99",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "行"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": [
+          {
+            "id": "89",
+            "text": "行",
+            "timeMs": 11
+          },
+          {
+            "id": "88",
+            "text": "行",
+            "timeMs": 12
+          },
+          {
+            "id": "87",
+            "text": "行",
+            "timeMs": 13
+          },
+          {
+            "id": "86",
+            "text": "行",
+            "timeMs": 14
+          },
+          {
+            "id": "85",
+            "text": "行",
+            "timeMs": 15
+          },
+          {
+            "id": "84",
+            "text": "行",
+            "timeMs": 16
+          },
+          {
+            "id": "83",
+            "text": "行",
+            "timeMs": 17
+          },
+          {
+            "id": "82",
+            "text": "行",
+            "timeMs": 18
+          },
+          {
+            "id": "81",
+            "text": "行",
+            "timeMs": 19
+          },
+          {
+            "id": "80",
+            "text": "行",
+            "timeMs": 20
+          },
+          {
+            "id": "79",
+            "text": "行",
+            "timeMs": 21
+          },
+          {
+            "id": "78",
+            "text": "行",
+            "timeMs": 22
+          },
+          {
+            "id": "77",
+            "text": "行",
+            "timeMs": 23
+          },
+          {
+            "id": "76",
+            "text": "行",
+            "timeMs": 24
+          },
+          {
+            "id": "75",
+            "text": "行",
+            "timeMs": 25
+          },
+          {
+            "id": "74",
+            "text": "行",
+            "timeMs": 26
+          },
+          {
+            "id": "73",
+            "text": "行",
+            "timeMs": 27
+          },
+          {
+            "id": "72",
+            "text": "行",
+            "timeMs": 28
+          },
+          {
+            "id": "71",
+            "text": "行",
+            "timeMs": 29
+          },
+          {
+            "id": "70",
+            "text": "行",
+            "timeMs": 30
+          },
+          {
+            "id": "69",
+            "text": "行",
+            "timeMs": 31
+          },
+          {
+            "id": "68",
+            "text": "行",
+            "timeMs": 32
+          },
+          {
+            "id": "67",
+            "text": "行",
+            "timeMs": 33
+          },
+          {
+            "id": "66",
+            "text": "行",
+            "timeMs": 34
+          },
+          {
+            "id": "65",
+            "text": "行",
+            "timeMs": 35
+          },
+          {
+            "id": "64",
+            "text": "行",
+            "timeMs": 36
+          },
+          {
+            "id": "63",
+            "text": "行",
+            "timeMs": 37
+          },
+          {
+            "id": "62",
+            "text": "行",
+            "timeMs": 38
+          },
+          {
+            "id": "61",
+            "text": "行",
+            "timeMs": 39
+          },
+          {
+            "id": "60",
+            "text": "行",
+            "timeMs": 40
+          },
+          {
+            "id": "59",
+            "text": "行",
+            "timeMs": 41
+          },
+          {
+            "id": "58",
+            "text": "行",
+            "timeMs": 42
+          },
+          {
+            "id": "57",
+            "text": "行",
+            "timeMs": 43
+          },
+          {
+            "id": "56",
+            "text": "行",
+            "timeMs": 44
+          },
+          {
+            "id": "55",
+            "text": "行",
+            "timeMs": 45
+          },
+          {
+            "id": "54",
+            "text": "行",
+            "timeMs": 46
+          },
+          {
+            "id": "53",
+            "text": "行",
+            "timeMs": 47
+          },
+          {
+            "id": "52",
+            "text": "行",
+            "timeMs": 48
+          },
+          {
+            "id": "51",
+            "text": "行",
+            "timeMs": 49
+          },
+          {
+            "id": "50",
+            "text": "行",
+            "timeMs": 50
+          },
+          {
+            "id": "49",
+            "text": "行",
+            "timeMs": 51
+          },
+          {
+            "id": "48",
+            "text": "行",
+            "timeMs": 52
+          },
+          {
+            "id": "47",
+            "text": "行",
+            "timeMs": 53
+          },
+          {
+            "id": "46",
+            "text": "行",
+            "timeMs": 54
+          },
+          {
+            "id": "45",
+            "text": "行",
+            "timeMs": 55
+          },
+          {
+            "id": "44",
+            "text": "行",
+            "timeMs": 56
+          },
+          {
+            "id": "43",
+            "text": "行",
+            "timeMs": 57
+          },
+          {
+            "id": "42",
+            "text": "行",
+            "timeMs": 58
+          },
+          {
+            "id": "41",
+            "text": "行",
+            "timeMs": 59
+          },
+          {
+            "id": "40",
+            "text": "行",
+            "timeMs": 60
+          },
+          {
+            "id": "39",
+            "text": "行",
+            "timeMs": 61
+          },
+          {
+            "id": "38",
+            "text": "行",
+            "timeMs": 62
+          },
+          {
+            "id": "37",
+            "text": "行",
+            "timeMs": 63
+          },
+          {
+            "id": "36",
+            "text": "行",
+            "timeMs": 64
+          },
+          {
+            "id": "35",
+            "text": "行",
+            "timeMs": 65
+          },
+          {
+            "id": "34",
+            "text": "行",
+            "timeMs": 66
+          },
+          {
+            "id": "33",
+            "text": "行",
+            "timeMs": 67
+          },
+          {
+            "id": "32",
+            "text": "行",
+            "timeMs": 68
+          },
+          {
+            "id": "31",
+            "text": "行",
+            "timeMs": 69
+          },
+          {
+            "id": "30",
+            "text": "行",
+            "timeMs": 70
+          },
+          {
+            "id": "29",
+            "text": "行",
+            "timeMs": 71
+          },
+          {
+            "id": "28",
+            "text": "行",
+            "timeMs": 72
+          },
+          {
+            "id": "27",
+            "text": "行",
+            "timeMs": 73
+          },
+          {
+            "id": "26",
+            "text": "行",
+            "timeMs": 74
+          },
+          {
+            "id": "25",
+            "text": "行",
+            "timeMs": 75
+          },
+          {
+            "id": "24",
+            "text": "行",
+            "timeMs": 76
+          },
+          {
+            "id": "23",
+            "text": "行",
+            "timeMs": 77
+          },
+          {
+            "id": "22",
+            "text": "行",
+            "timeMs": 78
+          },
+          {
+            "id": "21",
+            "text": "行",
+            "timeMs": 79
+          },
+          {
+            "id": "20",
+            "text": "行",
+            "timeMs": 80
+          },
+          {
+            "id": "19",
+            "text": "行",
+            "timeMs": 81
+          },
+          {
+            "id": "18",
+            "text": "行",
+            "timeMs": 82
+          },
+          {
+            "id": "17",
+            "text": "行",
+            "timeMs": 83
+          },
+          {
+            "id": "16",
+            "text": "行",
+            "timeMs": 84
+          },
+          {
+            "id": "15",
+            "text": "行",
+            "timeMs": 85
+          },
+          {
+            "id": "14",
+            "text": "行",
+            "timeMs": 86
+          },
+          {
+            "id": "13",
+            "text": "行",
+            "timeMs": 87
+          },
+          {
+            "id": "12",
+            "text": "行",
+            "timeMs": 88
+          },
+          {
+            "id": "11",
+            "text": "行",
+            "timeMs": 89
+          },
+          {
+            "id": "10",
+            "text": "行",
+            "timeMs": 90
+          },
+          {
+            "id": "9",
+            "text": "行",
+            "timeMs": 91
+          },
+          {
+            "id": "8",
+            "text": "行",
+            "timeMs": 92
+          },
+          {
+            "id": "7",
+            "text": "行",
+            "timeMs": 93
+          },
+          {
+            "id": "6",
+            "text": "行",
+            "timeMs": 94
+          },
+          {
+            "id": "5",
+            "text": "行",
+            "timeMs": 95
+          },
+          {
+            "id": "4",
+            "text": "行",
+            "timeMs": 96
+          },
+          {
+            "id": "3",
+            "text": "行",
+            "timeMs": 97
+          },
+          {
+            "id": "2",
+            "text": "行",
+            "timeMs": 98
+          },
+          {
+            "id": "1",
+            "text": "行",
+            "timeMs": 99
+          },
+          {
+            "id": "0",
+            "text": "行",
+            "timeMs": 100
+          }
+        ]
+      }
+    },
+    {
+      "name": "stationary-window",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 30000,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "backwards-window",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 30000,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 10000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "window-over-24h",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 86400001
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "missing-rows",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "null-rows",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": null,
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "failed-code-is-not-empty",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 1,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "missing-code",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "boolean-code",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": false,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "fractional-cursor",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000.5
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "boolean-cursor",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": true
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "invalid-context-duration",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 0
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "invalid-context-start",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": -1,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "episode-id-over32-rejected",
+      "context": {
+        "episode_id": "777777777777777777777777777777777",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "unicode-id-limit-and-bom-preserved",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "﻿保留﻿"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": [
+          {
+            "id": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+            "text": "﻿保留﻿",
+            "timeMs": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "90-equal-times-preserve-order",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "0",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "1",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "2",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "3",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "4",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "5",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "6",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "7",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "8",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "9",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "10",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "11",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "12",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "13",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "14",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "15",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "16",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "17",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "18",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "19",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "20",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "21",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "22",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "23",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "24",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "25",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "26",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "27",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "28",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "29",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "30",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "31",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "32",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "33",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "34",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "35",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "36",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "37",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "38",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "39",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "40",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "41",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "42",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "43",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "44",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "45",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "46",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "47",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "48",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "49",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "50",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "51",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "52",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "53",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "54",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "55",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "56",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "57",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "58",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "59",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "60",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "61",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "62",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "63",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "64",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "65",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "66",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "67",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "68",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "69",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "70",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "71",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "72",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "73",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "74",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "75",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "76",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "77",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "78",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "79",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "80",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "81",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "82",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "83",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "84",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "85",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "86",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "87",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "88",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "89",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1,
+                  "content": {
+                    "text": "弹幕"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": [
+          {
+            "id": "0",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "1",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "2",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "3",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "4",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "5",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "6",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "7",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "8",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "9",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "10",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "11",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "12",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "13",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "14",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "15",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "16",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "17",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "18",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "19",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "20",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "21",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "22",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "23",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "24",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "25",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "26",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "27",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "28",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "29",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "30",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "31",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "32",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "33",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "34",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "35",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "36",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "37",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "38",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "39",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "40",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "41",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "42",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "43",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "44",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "45",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "46",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "47",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "48",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "49",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "50",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "51",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "52",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "53",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "54",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "55",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "56",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "57",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "58",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "59",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "60",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "61",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "62",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "63",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "64",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "65",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "66",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "67",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "68",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "69",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "70",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "71",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "72",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "73",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "74",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "75",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "76",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "77",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "78",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "79",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "80",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "81",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "82",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "83",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "84",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "85",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "86",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "87",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "88",
+            "text": "弹幕",
+            "timeMs": 1
+          },
+          {
+            "id": "89",
+            "text": "弹幕",
+            "timeMs": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "integral-json-numbers",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "n",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1.0,
+                  "content": {
+                    "text": "数值"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1.0
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": [
+          {
+            "id": "n",
+            "text": "数值",
+            "timeMs": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "distinct-canonically-equivalent-ids",
+      "context": {
+        "episode_id": "700002",
+        "start_ms": 0,
+        "duration_ms": 60000
+      },
+      "raw": {
+        "code": 0,
+        "data": {
+          "data_list": [
+            {
+              "comment": {
+                "comment_id": "é",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1.0,
+                  "content": {
+                    "text": "数值"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1.0
+                }
+              }
+            },
+            {
+              "comment": {
+                "comment_id": "é",
+                "common": {
+                  "group_id": "700002",
+                  "status": 1.0,
+                  "content": {
+                    "text": "数值"
+                  }
+                },
+                "expand": {
+                  "offset_time": 1.0
+                }
+              }
+            }
+          ],
+          "extra": {
+            "next_query_danmaku_list_time": 30000
+          }
+        }
+      },
+      "expected": {
+        "episodeId": "700002",
+        "startMs": 0,
+        "nextMs": 30000,
+        "items": [
+          {
+            "id": "é",
+            "text": "数值",
+            "timeMs": 1
+          },
+          {
+            "id": "é",
+            "text": "数值",
+            "timeMs": 1
+          }
+        ]
+      }
+    }
+  ]
+}
