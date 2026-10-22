@@ -1,6 +1,6 @@
-// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.0.1","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","p3-reading-sign.fqnovelpic.com","snssdk.com","toutiaovod.com","douyinvod.com"]}
+// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.1.0","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","p3-reading-sign.fqnovelpic.com","snssdk.com","toutiaovod.com","douyinvod.com","v3-reading-videocdn302.qznovelvod.com"]}
 // 纯 JS 复现官方 x-argus / x-gorgon / x-ladon / x-khronos，不加载 libmetasec_ml.so。
-// 目录/详情使用官方接口；播放优先明文 App 候选，失败回退同集公开网页，CENC 请使用内置线路。
+// App 高清/CENC 优先，失败回退同集公开网页；需要支持 cencKey 契约的 N果版本。
 // 红果播放签名：纯 JS 实现（无 Node/原生依赖，可直接跑在 nshort QuickJS 插件里）
 // 覆盖 x-gorgon / x-khronos / x-ss-stub / x-argus / x-ladon。
 // 算法来自 libmetasec_ml.so 行为的软件复现，不加载 .so。
@@ -458,8 +458,10 @@ function baseQuery() {
   ].join("&");
 }
 
-async function apiRequest(path, payload) {
-  const query = baseQuery();
+async function apiRequest(path, payload, player = false) {
+  const query = baseQuery() + (player
+    ? "&host_abi=arm64-v8a&dragon_device_type=phone&pv_player=71332&compliance_status=0&need_personal_recommend=1&player_so_load=1&is_android_pad_screen=0"
+    : "");
   const body = JSON.stringify(payload);
   const headers = signPlayerRequest({ query, body, deviceId: DEVICE_ID, aid: AID });
   headers["Content-Type"] = "application/json";
@@ -626,11 +628,7 @@ async function detail({ id } = {}) {
   }
   chapters.sort((left, right) => left.index - right.index);
   if (!chapters.length) throw Error("目录为空，可稍后重试");
-  const drama = { id: seriesID, title: String(data.series_title || data.series_name || seriesID) };
-  const intro = data.series_intro || data.video_desc;
-  if (intro) drama.intro = String(intro);
-  const count = Number(data.episode_cnt || 0);
-  if (count > 0) drama.episodes = count;
+  const drama = dramaFromAny({...data, series_id_str:seriesID});
   return { drama, chapters };
 }
 
@@ -649,15 +647,6 @@ function pickModel(json, episodeID) {
   };
   let model = parse(data.video_model);
   if (!model && data[episodeID]) model = parse(data[episodeID].video_model);
-  if (!model) {
-    for (const key of Object.keys(data)) {
-      const row = data[key];
-      if (row && typeof row === "object" && row.video_model) {
-        model = parse(row.video_model);
-        if (model) break;
-      }
-    }
-  }
   if (!model) throw Error("未取得视频模型");
   return model;
 }
@@ -669,19 +658,71 @@ function variantList(model) {
   return [];
 }
 
-function mediaAddress(variant) {
-  const meta = variant.video_meta || {};
-  for (const candidate of [variant.main_url, variant.backup_url, meta.main_url, meta.backup_url]) {
-    if (typeof candidate === "string" && /^https:\/\//.test(candidate)) return candidate;
+function decodeBase64(value, limit) {
+  if (typeof value !== "string" || value.length > limit) throw Error("Base64 数据无效");
+  const text = value.trim();
+  if (!text || text.length % 4 === 1 || !/^[A-Za-z0-9+/]*={0,2}$/.test(text) ||
+      (text.indexOf("=") >= 0 && text.length % 4 !== 0)) throw Error("Base64 编码无效");
+  const out = [];
+  let accumulator = 0, bits = 0;
+  for (const char of text.replace(/=+$/, "")) {
+    accumulator = (accumulator << 6) | B64.indexOf(char);
+    bits += 6;
+    if (bits >= 8) { bits -= 8; out.push((accumulator >>> bits) & 255); }
   }
-  const list = variant.url_list || meta.url_list;
-  if (Array.isArray(list)) {
-    for (const item of list) {
-      if (typeof item === "string" && /^https:\/\//.test(item)) return item;
-      if (item && typeof item.url === "string" && /^https:\/\//.test(item.url)) return item.url;
+  if (bits && (accumulator & ((1 << bits) - 1))) throw Error("Base64 尾部无效");
+  return Uint8Array.from(out);
+}
+
+// Same synthetic-vector-verified content-key decoder as builtin hongguoContentKey / ContentKey.decode.
+function contentKeyHex(spade) {
+  const raw = decodeBase64(spade, 1024);
+  if (raw.length < 3) throw Error("CENC 密钥结构无效");
+  const tagLength = (raw[0] ^ raw[1] ^ raw[2]) - 48;
+  const count = raw.length - tagLength - 1;
+  if (tagLength < 1 || count < 33 || count >= raw.length) throw Error("CENC 密钥结构无效");
+  const seed = raw[raw.length - tagLength - 2] ^ raw[raw.length - tagLength - 1];
+  const tag = Array.from(raw.slice(raw.length - tagLength), b => String.fromCharCode(b ^ seed)).join("");
+  if (tag === "app_v2" || tag === "web_v2") throw Error("CENC 密钥版本暂不支持");
+  let even = 250, odd = 85;
+  const decoded = [];
+  for (let i = 0; i < count; i++) {
+    const current = raw[i + 1], previous = i % 2 === 0 ? even : odd;
+    if (i % 2 === 0) even = current; else odd = current;
+    let bit = i, ones = 0;
+    while (bit) { ones += bit & 1; bit >>>= 1; }
+    decoded.push(((previous ^ current) - 21 - ones) & 255);
+  }
+  const padding = parseInt(String.fromCharCode(decoded[0]), 36);
+  const key = decoded.slice(1, 33).map(b => String.fromCharCode(b)).join("");
+  if (!Number.isFinite(padding) || count - padding - 1 !== 32 || !/^[0-9a-fA-F]{32}$/.test(key)) throw Error("CENC 密钥内容无效");
+  return key.toLowerCase();
+}
+
+const MEDIA_HOSTS = ["hongguoduanju.com", "snssdk.com", "toutiaovod.com", "douyinvod.com", "v3-reading-videocdn302.qznovelvod.com"];
+function mediaAddresses(variant) {
+  const out = [], seen = new Set();
+  for (const row of [variant, variant.video_meta || {}]) {
+    for (const name of ["main_url", "backup_url", "backup_url_1", "backup_url_2", "backup_urls", "url_list"]) {
+      const values = Array.isArray(row[name]) ? row[name] : [row[name]];
+      for (const value of values) {
+        let raw = typeof value === "string" ? value : value && value.url;
+        if (typeof raw !== "string" || raw.length > 16384) continue;
+        try {
+          if (!/^https:\/\//i.test(raw)) raw = decodeURIComponent(Array.from(decodeBase64(raw, 16384), b => "%" + b.toString(16).padStart(2, "0")).join(""));
+        } catch (_) { continue; }
+        const host = /^https:\/\/([a-z0-9.-]+)(?::443)?(?:[/?]|$)/i.exec(raw);
+        if (!host || raw.length > 8192 || raw.indexOf("#") >= 0 || !MEDIA_HOSTS.includes(host[1].toLowerCase())) continue;
+        raw = raw.replace(/^https:/i, "https:");
+        if (!seen.has(raw)) { seen.add(raw); out.push(raw); }
+      }
     }
   }
-  return "";
+  return out;
+}
+
+function mediaAddress(variant) {
+  return mediaAddresses(variant)[0] || "";
 }
 
 function heightOf(variant) {
@@ -693,37 +734,50 @@ function heightOf(variant) {
     const width = Number(variant.vwidth || meta.vwidth || 0);
     if (width) height = width;
   }
+  const width = Number(variant.vwidth || meta.vwidth || 0);
+  if (!definition && width > 0 && height > 0) height = Math.min(width, height);
   return height;
 }
 
 function isEncrypted(variant) {
   const encryption = variant.encrypt_info || {};
+  const flag = value => value === true || value === 1 || value === "1" || String(value).toLowerCase() === "true";
   return Boolean(
-    variant.spade_a || encryption.spade_a || variant.encrypt || encryption.encrypt ||
+    variant.spade_a || encryption.spade_a || flag(variant.encrypt) || flag(encryption.encrypt) ||
     variant.encryption_method === "cenc-aes-ctr" || encryption.encryption_method === "cenc-aes-ctr"
   );
 }
 
-// 插件契约只能返回 url/quality，传不了 CENC 密钥，因此优先挑未加密档位。
+// Keep each URL paired with its own content key. Media decryption belongs to the host player.
 function bestVariant(model) {
-  let best = null;
-  let bestScore = -1;
-  for (const variant of variantList(model)) {
+  const choices = [], seen = new Set();
+  for (const variant of variantList(model).slice(0, 200)) {
     if (!variant || typeof variant !== "object") continue;
     const meta = variant.video_meta || {};
     const codec = String(variant.codec_type || meta.codec_type || "").toLowerCase();
-    if (codec === "bytevc2") continue;
-    if (isEncrypted(variant)) continue;
-    const url = mediaAddress(variant);
-    if (!url) continue;
+    const gear = String(variant.gear_des_key || meta.gear_des_key || "").toLowerCase();
+    if (codec.includes("bytevc2") || gear.includes("bytevc2")) continue;
+    let cencKey;
+    if (isEncrypted(variant)) {
+      const encryption = variant.encrypt_info || {};
+      try { cencKey = contentKeyHex(variant.spade_a || encryption.spade_a || ""); }
+      catch (_) { continue; }
+    }
     const height = heightOf(variant);
+    if (!Number.isFinite(height) || height < 0 || height > 16384) continue;
     const score = height * 10 + (codec === "h264" || codec === "avc1" ? 1 : 0);
-    if (score > bestScore) {
-      bestScore = score;
-      best = { url, quality: height };
+    for (const url of mediaAddresses(variant)) {
+      const identity = url + "\0" + (cencKey || "") + "\0" + height;
+      if (seen.has(identity)) continue;
+      seen.add(identity);
+      const value = {url, quality:height};
+      if (cencKey) value.cencKey = cencKey;
+      choices.push({score, value});
     }
   }
-  return best;
+  choices.sort((a, b) => b.score - a.score);
+  if (!choices.length) return null;
+  return {...choices[0].value, variants:choices.slice(1, 17).map(row => row.value)};
 }
 
 // 网页试看兜底：免费集才有明文直链
@@ -770,19 +824,20 @@ globalThis.nshort = {
     const seriesID = numericID(id);
     const episodeID = numericID(episode && episode.id);
     if (!seriesID || !episodeID) throw Error("剧集或分集编号无效");
-    try {
-      const json = await apiRequest("/novel/player/video_model/v1/", {
-        video_id: episodeID,
-        from_video_id: "",
-        source: 0,
-        need_all_video_definition: true,
-        need_mp4_align: false,
-        use_os_player: false,
-      });
-      const best = bestVariant(pickModel(json, episodeID));
-      if (best) return { url: best.url, quality: best.quality };
-    } catch (_) {
-      // An empty/failed App response must not prevent the bounded public fallback.
+    for (const preload of [false, true]) {
+      const payload = {
+        biz_param:{detail_page_version:0,device_level:3,disable_digg_stat:false,
+          need_all_video_definition:true,need_mp4_align:false,use_os_player:false,use_server_dns:false,video_platform:1024},
+        mixed_video_id_map:{"1004":[episodeID]},
+      };
+      if (preload) payload.dr_scene = "preload";
+      try {
+        const json = await apiRequest(preload ? "/novel/player/multi_video_model/preload/v1/" : "/novel/player/multi_video_model/v1/", payload, true);
+        const best = bestVariant(pickModel(json, episodeID));
+        if (best) return best;
+      } catch (_) {
+        // Only this episode is requested; the normal route precedes preload and public web.
+      }
     }
     return webPlay(seriesID, episodeID);
   },
