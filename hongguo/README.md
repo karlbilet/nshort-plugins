@@ -2,7 +2,7 @@
 
 N果「设置 → JS 源插件」导入 `hongguo-1080.js`，手动启用后点击「浏览」。普通账号只要已获红果源权限即可使用；剧集保持独立插件身份，账号与同步继续由 N果管理。
 
-**需要包含本轮 CENC 插件契约的新 App 构建。** 旧 App 仅支持 URL/quality，更新 JS 无法补齐宿主的密钥传递。当前按用户要求只做本地提交，没有更新 GitHub URL 或 TestFlight。
+**需要 N果 0.1.0 构建 32 或后续包含 CENC 插件契约的版本。** 旧 App 仅支持 URL/quality，更新 JS 无法补齐宿主的密钥传递。App 安装包见 [N果公开发布仓库](https://github.com/karlbilet/nshortapp-releases/releases)；iOS 通过 TestFlight 更新。插件与 App 需要配套使用。
 
 ## 1.1.0 更新
 
