@@ -20,10 +20,17 @@ for (const [file, source] of [['huangguo-video.js','huangguo-video'],['huangguo-
     assert.equal(manifest.builtinSource,source);
     assert.deepEqual(manifest.hosts,[]);
     assert.equal(manifest.version,'1.0.0');
-    for (const method of ['catalog','search','detail','play','danmaku','seriesSeasons']) assert.equal(typeof load()[method],'function');
+    for (const method of ['describe','catalog','search','detail','play','danmaku','seriesSeasons']) assert.equal(typeof load()[method],'function');
   });
   test(`${file} forwards only supported requests and prefers 1080p`, async () => {
     const p=load();
+    const described = plain(await p.describe());
+    assert.ok(described.modules.some((row) => row.id === 'all'));
+    assert.deepEqual(plain(await p.catalog({page:1,module:'all'})),{builtin:{action:'catalog',page:1,category:''}});
+    if (source === 'huangguoai') {
+      assert.deepEqual(plain(await p.catalog({page:1,module:'ai-duanju'})),{builtin:{action:'catalog',page:1,category:'ai-duanju'}});
+    }
+    await assert.rejects(async()=>p.catalog({page:1,module:'../cn'}));
     assert.deepEqual(plain(await p.catalog({page:2,category:'',url:'https://arbitrary.test/'})),{builtin:{action:'catalog',page:2,category:''}});
     assert.deepEqual(plain(await p.search({query:'  高三爱情故事  '})),{builtin:{action:'search',query:'高三爱情故事'}});
     assert.deepEqual(plain(await p.detail({id:'sample'})),{builtin:{action:'detail',id:'sample'}});

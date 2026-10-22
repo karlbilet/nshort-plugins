@@ -556,7 +556,8 @@ function dramaFromAny(row, genre) {
 }
 
 // ---------- 目录 / 搜索 / 详情 ----------
-async function catalog({ category = "" } = {}) {
+async function catalog(input = {}) {
+  const category = input.module || input.category || "";
   const key = GENRES[category] ? category : "short_play";
   const genre = GENRES[key];
   const json = await apiRequest("/reading/distribution/category/landpage/v/", {
@@ -593,8 +594,8 @@ async function catalog({ category = "" } = {}) {
   return { items, hasMore: Boolean(data.has_more) };
 }
 
-async function search({ query = "" } = {}) {
-  const keyword = String(query).trim();
+async function search(input = {}) {
+  const keyword = String(input.keyword || input.query || "").trim();
   if (!keyword) return { items: [], hasMore: false };
   const html = await webText("/search/" + encodeURIComponent(keyword));
   const page = loaderPage(parseRouterData(html), "search_");
@@ -932,7 +933,20 @@ async function danmaku(input) {
   return parseDanmaku(JSON.parse(await response.text()),context);
 }
 
+function describe() {
+  return {
+    title: "红果官方1080p",
+    modules: [
+      {id: "short_play", title: "真人剧", params: [{name: "page", title: "页码", type: "page"}]},
+      {id: "comic_series", title: "漫剧", params: [{name: "page", title: "页码", type: "page"}]},
+      {id: "ai_series", title: "AI剧", params: [{name: "page", title: "页码", type: "page"}]},
+    ],
+    search: {title: "搜索", params: [{name: "keyword", title: "关键词", type: "input"}]},
+  };
+}
+
 globalThis.nshort = {
+  describe,
   catalog: async (input) => catalog(input || {}),
   search: async (input) => search(input || {}),
   detail: async (input) => detail(input || {}),

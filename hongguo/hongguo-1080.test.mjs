@@ -19,6 +19,15 @@ test('manifest declares the actual poster host without wildcard permissions', ()
   assert.ok(!manifest.hosts.some(host => host.includes('*')));
 });
 
+test('describe lists the three genres without a network request', async () => {
+  let calls = 0;
+  const context = runtime(async () => { calls += 1; throw new Error('describe must not fetch'); });
+  const described = await context.nshort.describe();
+  assert.equal(calls, 0);
+  const ids = Array.from(described.modules, (row) => String(row.id));
+  assert.deepEqual(ids, ['short_play', 'comic_series', 'ai_series']);
+});
+
 test('catalog preserves the source poster URL', async () => {
   const cover = 'https://p3-reading-sign.fqnovelpic.com/poster.jpg';
   const context = vm.createContext({fetch: async () => ({text: async () => JSON.stringify({

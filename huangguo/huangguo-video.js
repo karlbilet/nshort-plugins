@@ -7,15 +7,30 @@
     return value.trim();
   }
   function request(action, args) { return { builtin: Object.assign({ action: action }, args) }; }
+  const modules = { all: '' };
+  function categoryOf(args) {
+    if (typeof args.module === 'string' && args.module) {
+      if (!Object.prototype.hasOwnProperty.call(modules, args.module)) throw new Error('分类无效');
+      return modules[args.module];
+    }
+    return args.category || '';
+  }
   globalThis.nshort = {
+    describe: async function () {
+      return {
+        title: '黄果视频',
+        modules: [{ id: 'all', title: '全部视频', params: [{ name: 'page', title: '页码', type: 'page' }] }],
+        search: { title: '搜索', params: [{ name: 'keyword', title: '关键词', type: 'input' }] }
+      };
+    },
     catalog: async function (args = {}) {
       const page = args.page === undefined ? 1 : args.page;
       if (!Number.isInteger(page) || page < 1 || page > 10000) throw new Error('页码无效');
-      const category = args.category || '';
+      const category = categoryOf(args);
       if (typeof category !== 'string' || category.length > 128) throw new Error('分类无效');
       return request('catalog', { page: page, category: category });
     },
-    search: async function (args = {}) { return request('search', { query: text(args.query, 80) }); },
+    search: async function (args = {}) { return request('search', { query: text(args.keyword || args.query, 80) }); },
     detail: async function (args = {}) { return request('detail', { id: text(args.id, 60) }); },
     play: async function (args = {}) {
       const quality = args.quality || 1080;
