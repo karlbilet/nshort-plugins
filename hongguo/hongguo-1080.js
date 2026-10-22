@@ -1,6 +1,6 @@
-// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.0.0","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","snssdk.com","toutiaovod.com","douyinvod.com"]}
+// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.0.1","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","p3-reading-sign.fqnovelpic.com","snssdk.com","toutiaovod.com","douyinvod.com"]}
 // 纯 JS 复现官方 x-argus / x-gorgon / x-ladon / x-khronos，不加载 libmetasec_ml.so。
-// 目录、搜索、详情、播放全部走官方接口，适用于红果全部剧集。
+// 目录/详情使用官方接口；播放优先明文 App 候选，失败回退同集公开网页，CENC 请使用内置线路。
 // 红果播放签名：纯 JS 实现（无 Node/原生依赖，可直接跑在 nshort QuickJS 插件里）
 // 覆盖 x-gorgon / x-khronos / x-ss-stub / x-argus / x-ladon。
 // 算法来自 libmetasec_ml.so 行为的软件复现，不加载 .so。
@@ -727,6 +727,19 @@ function bestVariant(model) {
 }
 
 // 网页试看兜底：免费集才有明文直链
+function publicVideoAddress(html, episodeID) {
+  const scripts = html.matchAll(/<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi);
+  for (const match of scripts) {
+    let value;
+    try { value = JSON.parse(match[1]); } catch (_) { continue; }
+    if (value && value["@type"] === "VideoObject" && typeof value.contentUrl === "string" &&
+        value.contentUrl.indexOf("https://hongguoduanju.com/video/public/" + episodeID + "/") === 0) {
+      return value.contentUrl;
+    }
+  }
+  return "";
+}
+
 async function webPlay(seriesID, episodeID) {
   const html = await webText("/player/" + encodeURIComponent(seriesID) + "/" + encodeURIComponent(episodeID));
   const page = loaderPage(parseRouterData(html), "player_");
@@ -734,7 +747,13 @@ async function webPlay(seriesID, episodeID) {
   if (numericID(page.vid) !== episodeID || numericID(page.series_id) !== seriesID) {
     throw Error("网页返回了其他剧集");
   }
-  const url = mediaAddress(page.video_player_info || {});
+  const detail = page.seriesDetail || {};
+  const limit = Number(detail.accessible_episode_cnt || 0);
+  if (limit > 0) {
+    const index = Array.isArray(detail.vid_list) ? detail.vid_list.map(numericID).indexOf(episodeID) + 1 : 0;
+    if (!index || index > limit) throw Error("该集超出网页免费试看范围，请使用内置 App 线路");
+  }
+  const url = publicVideoAddress(html, episodeID) || mediaAddress(page.video_player_info || {});
   if (!url) throw Error("该集没有公开播放地址");
   const seo = page.publicVideoSeo || {};
   let height = Number(seo.height || 0);
@@ -751,16 +770,20 @@ globalThis.nshort = {
     const seriesID = numericID(id);
     const episodeID = numericID(episode && episode.id);
     if (!seriesID || !episodeID) throw Error("剧集或分集编号无效");
-    const json = await apiRequest("/novel/player/video_model/v1/", {
-      video_id: episodeID,
-      from_video_id: "",
-      source: 0,
-      need_all_video_definition: true,
-      need_mp4_align: false,
-      use_os_player: false,
-    });
-    const best = bestVariant(pickModel(json, episodeID));
-    if (best) return { url: best.url, quality: best.quality };
+    try {
+      const json = await apiRequest("/novel/player/video_model/v1/", {
+        video_id: episodeID,
+        from_video_id: "",
+        source: 0,
+        need_all_video_definition: true,
+        need_mp4_align: false,
+        use_os_player: false,
+      });
+      const best = bestVariant(pickModel(json, episodeID));
+      if (best) return { url: best.url, quality: best.quality };
+    } catch (_) {
+      // An empty/failed App response must not prevent the bounded public fallback.
+    }
     return webPlay(seriesID, episodeID);
   },
   danmaku: async () => ({ items: [] }),
