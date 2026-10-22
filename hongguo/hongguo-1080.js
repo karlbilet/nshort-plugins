@@ -1,4 +1,4 @@
-// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.2.0","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","p3-reading-sign.fqnovelpic.com","snssdk.com","toutiaovod.com","douyinvod.com","v3-reading-videocdn302.qznovelvod.com"]}
+// @nshort {"id":"hongguo-1080","name":"红果官方1080p","version":"1.3.0","hosts":["api5-normal-sinfonlineb.fqnovel.com","hongguoduanju.com","p3-reading-sign.fqnovelpic.com","snssdk.com","toutiaovod.com","douyinvod.com","v3-reading-videocdn302.qznovelvod.com"]}
 // 纯 JS 复现官方 x-argus / x-gorgon / x-ladon / x-khronos，不加载 libmetasec_ml.so。
 // App 高清/CENC 优先，失败回退同集公开网页；需要支持 cencKey 契约的 N果版本。
 // 红果播放签名：纯 JS 实现（无 Node/原生依赖，可直接跑在 nshort QuickJS 插件里）
@@ -462,6 +462,36 @@ function baseQuery() {
   ].join("&");
 }
 
+// JSON.parse would round unquoted 64-bit series IDs. Quote only unsafe integer
+// tokens outside JSON strings; descriptions and escaped JSON remain untouched.
+function parseSourceJSON(text) {
+  const parts = [];
+  const number = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
+  let at = 0;
+  let start = 0;
+  while (at < text.length) {
+    if (text[at] === '"') {
+      at++;
+      while (at < text.length) {
+        if (text[at] === "\\") at += 2;
+        else if (text[at++] === '"') break;
+      }
+      continue;
+    }
+    number.lastIndex = at;
+    const token = number.exec(text);
+    if (!token) { at++; continue; }
+    const raw = token[0];
+    if (/^-?\d+$/.test(raw) && !Number.isSafeInteger(Number(raw))) {
+      parts.push(text.slice(start, at), JSON.stringify(raw));
+      start = number.lastIndex;
+    }
+    at = number.lastIndex;
+  }
+  parts.push(text.slice(start));
+  return JSON.parse(parts.join(""));
+}
+
 async function apiRequest(path, payload, player = false) {
   const query = baseQuery() + (player
     ? "&host_abi=arm64-v8a&dragon_device_type=phone&pv_player=71332&compliance_status=0&need_personal_recommend=1&player_so_load=1&is_android_pad_screen=0"
@@ -473,7 +503,7 @@ async function apiRequest(path, payload, player = false) {
   const text = await response.text();
   let json;
   try {
-    json = JSON.parse(text);
+    json = parseSourceJSON(text);
   } catch (_) {
     throw Error("接口返回非 JSON");
   }
@@ -536,6 +566,7 @@ function loaderPage(data, prefix) {
 }
 
 function numericID(value) {
+  if (typeof value === "number" && !Number.isSafeInteger(value)) return "";
   const text = String(value == null ? "" : value);
   return /^\d+$/.test(text) ? text : "";
 }
@@ -557,16 +588,18 @@ function dramaFromAny(row, genre) {
 
 // ---------- 目录 / 搜索 / 详情 ----------
 async function catalog(input = {}) {
+  const page = input.page === undefined ? 1 : Number(input.page);
+  if (!Number.isInteger(page) || page < 1 || page > 10000) throw Error("页码无效");
   const category = input.module || input.category || "";
   const key = GENRES[category] ? category : "short_play";
   const genre = GENRES[key];
   const json = await apiRequest("/reading/distribution/category/landpage/v/", {
     req_scene: genre.scene,
-    offset: 0,
+    offset: (page - 1) * 18,
     limit: 18,
     req_type: "only_content",
     need_selector_panel: false,
-    client_req_type: 3,
+    client_req_type: page > 1 ? 2 : 3,
     session_id: "",
     filter_ids: "",
     select_items: {
@@ -597,20 +630,49 @@ async function catalog(input = {}) {
 async function search(input = {}) {
   const keyword = String(input.keyword || input.query || "").trim();
   if (!keyword) return { items: [], hasMore: false };
-  const html = await webText("/search/" + encodeURIComponent(keyword));
-  const page = loaderPage(parseRouterData(html), "search_");
-  if (!page) throw Error("搜索页未返回数据");
-  const rows = Array.isArray(page.searchList) ? page.searchList : [];
-  const items = [];
-  const seen = {};
-  for (const row of rows) {
-    const item = dramaFromAny(row, "短剧");
-    if (item && !seen[item.id]) {
-      seen[item.id] = true;
-      items.push(item);
+  const failures = [];
+  try {
+    const response = await fetch(WEB + "/incent_resource/suggestion?app_id=" + AID + "&query=" + encodeURIComponent(keyword) + "&count=50", {
+      method: "GET", headers: { "User-Agent": UA, "Referer": WEB + "/", "Accept": "application/json" },
+    });
+    const json = parseSourceJSON(await response.text());
+    const rows = json.suggest_list || (json.data && json.data.suggest_list);
+    if (!Array.isArray(rows)) throw Error("名称检索未返回有效数据");
+    const items = [];
+    const seen = {};
+    for (const row of rows) {
+      const video = row && row.video_data;
+      if (!row || row.word_type !== "short_play_name" || !video || !numericID(video.series_id_str || video.series_id)) continue;
+      const item = dramaFromAny(row, "短剧");
+      if (item && item.title !== item.id && !seen[item.id]) {
+        seen[item.id] = true;
+        items.push(item);
+        if (items.length === 50) break;
+      }
     }
+    if (items.length) return { items, hasMore: false };
+  } catch (error) {
+    failures.push("名称检索: " + (error.message || String(error)));
   }
-  return { items, hasMore: false };
+  try {
+    const html = await webText("/search/" + encodeURIComponent(keyword));
+    const page = loaderPage(parseRouterData(html), "search_");
+    if (!page || page.isSuccess !== true || page.query !== keyword || !Array.isArray(page.searchList)) throw Error("搜索页未返回有效数据");
+    const items = [];
+    const seen = {};
+    for (const row of page.searchList) {
+      if (!row || !row.video_data || typeof row.video_data !== "object") continue;
+      const item = dramaFromAny(row, "短剧");
+      if (item && !seen[item.id]) {
+        seen[item.id] = true;
+        items.push(item);
+      }
+    }
+    return { items, hasMore: false };
+  } catch (error) {
+    failures.push("网页检索: " + (error.message || String(error)));
+    throw Error(failures.join("；"));
+  }
 }
 
 async function detail({ id } = {}) {

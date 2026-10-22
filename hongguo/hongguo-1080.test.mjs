@@ -13,7 +13,7 @@ function runtime(fetch) {
 }
 
 test('manifest declares the actual poster host without wildcard permissions', () => {
-  assert.equal(manifest.version, '1.2.0');
+  assert.equal(manifest.version, '1.3.0');
   assert.ok(manifest.hosts.includes('p3-reading-sign.fqnovelpic.com'));
   assert.ok(manifest.hosts.includes('v3-reading-videocdn302.qznovelvod.com'));
   assert.ok(!manifest.hosts.some(host => host.includes('*')));
@@ -51,6 +51,130 @@ test('catalog preserves the source poster URL', async () => {
   const result = await context.nshort.catalog({});
   assert.equal(result.items[0].cover, cover);
   assert.equal(result.items[0].id, '123');
+});
+
+test('catalog advances page offsets and uses continuation requests for the selected module', async () => {
+  const calls = [];
+  const context = runtime(async (_url, options) => {
+    const body = JSON.parse(options.body);
+    calls.push(body);
+    return {text: async () => JSON.stringify({data: {
+      video_data: [{series_id_str: String(body.offset + 123), series_title: '合成分页剧'}],
+      next_offset: body.offset + 18, has_more: true,
+    }})};
+  });
+  const ids = [];
+  for (const page of [1, 2, 3]) {
+    const result = await context.nshort.catalog({module: 'comic_series', page});
+    ids.push(result.items[0].id);
+    assert.equal(result.hasMore, true);
+  }
+  assert.deepEqual(calls.map(row => row.offset), [0, 18, 36]);
+  assert.deepEqual(calls.map(row => row.client_req_type), [3, 2, 2]);
+  assert.deepEqual(calls.map(row => row.select_items.genre), Array(3).fill(['comic_series']));
+  assert.equal(new Set(ids).size, 3);
+});
+
+test('catalog rejects invalid page numbers before any source request', async () => {
+  let calls = 0;
+  const context = runtime(async () => { calls += 1; throw Error('unexpected fetch'); });
+  for (const page of [0, -1, 1.5, 10001, 'invalid']) {
+    await assert.rejects(() => context.nshort.catalog({page}), /页码无效/);
+  }
+  assert.equal(calls, 0);
+});
+
+function searchPage(query, rows, success = true) {
+  return `<script>window._ROUTER_DATA=${JSON.stringify({loaderData: {
+    'search_(keyword)/page': {query, isSuccess: success, searchList: rows},
+  }})}</script>`;
+}
+
+test('search uses name JSON before HTML and keeps only identified drama records', async () => {
+  const calls = [];
+  const cover = 'https://p3-reading-sign.fqnovelpic.com/search.jpg';
+  const context = runtime(async (url, options) => {
+    calls.push({url, options});
+    return {text: async () => JSON.stringify({suggest_list: [
+      null,
+      {word_type: 'common_query', keyword: '999', name: '查询词'},
+      {word_type: 'short_play_name', name: '合成剧第一季', video_data: {series_id_str: '123', series_title: '合成剧第一季', series_cover: cover, episode_cnt: 81}},
+      {word_type: 'short_play_name', video_data: {series_id_str: '123', series_title: '重复'}},
+      {word_type: 'short_play_name', keyword: '456', name: '没有剧集身份'},
+      {word_type: 'short_play_name', video_data: {series_id: 1e30, series_title: '科学计数编号'}},
+    ]})};
+  });
+  const result = await context.nshort.search({keyword: ' 合成剧 '});
+  assert.equal(calls.length, 1);
+  const url = new URL(calls[0].url);
+  assert.equal(url.pathname, '/incent_resource/suggestion');
+  assert.equal(url.searchParams.get('query'), '合成剧');
+  assert.equal(url.searchParams.get('app_id'), '8662');
+  assert.equal(calls[0].options.headers.Accept, 'application/json');
+  assert.deepEqual(Array.from(result.items, row => row.id), ['123']);
+  assert.equal(result.items[0].cover, cover);
+  assert.equal(result.items[0].episodes, 81);
+});
+
+test('search accepts the data-wrapped name response used by the builtin source', async () => {
+  const context = runtime(async () => ({text: async () => JSON.stringify({data: {suggest_list: [
+    {word_type: 'short_play_name', name: '合成剧', video_data: {series_id_str: '123', series_cover: 'https://p3-reading-sign.fqnovelpic.com/a.jpg'}},
+  ]}})}));
+  assert.equal((await context.nshort.search({query: '合成剧'})).items[0].id, '123');
+});
+
+test('unquoted 64-bit source IDs retain every digit without modifying quoted descriptions', async () => {
+  const intro = '正文里的 "series_id": 9999999999999999999，以及转义符 \\"';
+  const raw = '{"suggest_list":[{"word_type":"short_play_name","name":"合成剧","video_data":{"series_id":7621200213801176126,"series_title":"合成剧","series_intro":' + JSON.stringify(intro) + ',"episode_cnt":81}}]}';
+  const context = runtime(async () => ({text: async () => raw}));
+  const result = await context.nshort.search({query: '合成剧'});
+  assert.equal(result.items[0].id, '7621200213801176126');
+  assert.equal(result.items[0].intro, intro);
+  assert.equal(result.items[0].episodes, 81);
+});
+
+test('catalog also retains an unquoted 64-bit source ID', async () => {
+  const context = runtime(async () => ({text: async () => '{"data":{"video_data":[{"series_id":7621200213801176126,"series_title":"合成目录"}],"has_more":false}}'}));
+  assert.equal((await context.nshort.catalog({})).items[0].id, '7621200213801176126');
+});
+
+test('failed name lookup falls back to a matching public search page', async () => {
+  const calls = [];
+  const context = runtime(async url => {
+    calls.push(url);
+    if (url.includes('/incent_resource/suggestion')) throw Error('name route unavailable');
+    return {text: async () => searchPage('合成剧', [
+      {video_data: {series_id_str: '123', series_title: '合成剧'}},
+      {video_data: {series_id_str: '123', series_title: '重复'}},
+      {keyword: '999', name: '非剧集结果'},
+    ])};
+  });
+  const result = await context.nshort.search({keyword: '合成剧'});
+  assert.equal(calls.length, 2);
+  assert.deepEqual(Array.from(result.items, row => row.id), ['123']);
+});
+
+test('search rejects mismatched pages, unavailable routes and malformed data', async () => {
+  for (const page of [
+    searchPage('其他查询', [{video_data: {series_id_str: '123'}}]),
+    searchPage('合成剧', [], false),
+    '<script data-sdk-glue-default="pre-handler">/* no result data */</script>',
+  ]) {
+    const context = runtime(async url => ({text: async () => url.includes('/incent_resource/suggestion') ? '{}' : page}));
+    await assert.rejects(() => context.nshort.search({query: '合成剧'}));
+  }
+});
+
+test('a validated empty result stays empty and blank input never fetches', async () => {
+  let calls = 0;
+  const context = runtime(async url => {
+    calls += 1;
+    return {text: async () => url.includes('/incent_resource/suggestion') ? '{"suggest_list":[]}' : searchPage('合成剧', [])};
+  });
+  assert.equal((await context.nshort.search({query: '   '})).items.length, 0);
+  assert.equal(calls, 0);
+  assert.equal((await context.nshort.search({query: '合成剧'})).items.length, 0);
+  assert.equal(calls, 2);
 });
 
 test('detail keeps the source poster alongside the requested episode list', async () => {
