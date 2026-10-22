@@ -28,6 +28,20 @@ test('describe lists the three genres without a network request', async () => {
   assert.deepEqual(ids, ['short_play', 'comic_series', 'ai_series']);
 });
 
+test('each Rex module reaches its own Hongguo catalog genre and scene', async () => {
+  const requests = [];
+  const context = runtime(async (url, options) => {
+    requests.push({path: new URL(url).pathname, body: JSON.parse(options.body)});
+    return {text: async () => JSON.stringify({data: {video_data: []}})};
+  });
+  for (const module of ['short_play', 'comic_series', 'ai_series']) {
+    await context.nshort.catalog({module, page: 1});
+  }
+  assert.deepEqual(requests.map(row => row.path), Array(3).fill('/reading/distribution/category/landpage/v/'));
+  assert.deepEqual(requests.map(row => row.body.select_items.genre), [['short_play'], ['comic_series'], ['ai_series']]);
+  assert.deepEqual(requests.map(row => row.body.req_scene), ['default', 'comic_series', 'ai_series']);
+});
+
 test('catalog preserves the source poster URL', async () => {
   const cover = 'https://p3-reading-sign.fqnovelpic.com/poster.jpg';
   const context = vm.createContext({fetch: async () => ({text: async () => JSON.stringify({
