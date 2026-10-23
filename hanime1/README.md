@@ -1,6 +1,6 @@
 # Hanime1 源插件
 
-版本：1.0.0。由 N果 `examples/plugins/hanime1.js` 同步，采用 N果 JS 插件接口和模块分类。
+版本：1.1.0。由 N果 `examples/plugins/hanime1.js` 同步，对应 Rex 模块 2.3.2。
 
 导入地址：
 

@@ -47,6 +47,9 @@ test("hanime modules omit minor-targeted filters", async () => {
   const values = [role, relation, plot].flatMap((row) => row.params[0].enumOptions.map((option) => option.value));
   assert.equal(values.includes("JK") || values.includes("正太") || values.includes("女兒") || values.includes("母女丼"), false);
   assert.equal(role.params[0].value, "御姐");
+  const seriesModule = described.modules.find((row) => row.id === "series");
+  assert.equal(seriesModule.params[0].enumOptions.some((option) => option.value === "preview"), true);
+  assert.equal(described.modules[0].params[0].enumOptions.length, 9);
   const page = await nshort.catalog({page: 1});
   assert.equal(page.items.length, 2);
   assert.equal(page.items[0].id, "1001");
@@ -70,6 +73,10 @@ test("unknown filters do not become open urls and a challenge page stays empty",
   const series = await nshort.catalog({module: "series", genre: "rifan", page: 2});
   assert.equal(series.items[0].id, "1001");
   assert.equal(decodeURIComponent(urls.at(-1)), "https://hanime1.me/search?genre=裏番&page=2");
+  const sorted = await nshort.catalog({module: "place", tag: "體育倉庫", sort: "views"});
+  assert.equal(decodeURIComponent(urls.at(-1)), "https://hanime1.me/search?sort=觀看次數&tags[]=體育倉庫");
+  await nshort.catalog({module: "series", genre: "preview"});
+  assert.equal(decodeURIComponent(urls.at(-1)), "https://hanime1.me/search?genre=新番預告");
 });
 
 test("search detail and playback stay on declared hosts", async () => {
