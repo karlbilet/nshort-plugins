@@ -4,12 +4,12 @@ import test from "node:test";
 import { createContext, runInContext } from "node:vm";
 
 const script = readFileSync(new URL("./missav.js", import.meta.url), "utf8");
-const listHtml = `<div class="thumbnail"><img data-src="https://fourhoi.com/ssis-001/cover-t.jpg"><a class="text-secondary" href="https://missav.fans/cn/ssis-001">SSIS-001 标题</a></div>
+const listHtml = `<script src="/cdn-cgi/challenge-platform/scripts/jsd/main.js"></script><div class="thumbnail"><img data-src="https://fourhoi.com/ssis-001/cover-t.jpg"><a class="text-secondary" href="https://missav.fans/cn/ssis-001">SSIS-001 标题</a></div>
 <div class="thumbnail"><a class="text-secondary" href="/cn/mide-002-chinese-subtitle">MIDE-002</a></div>
 <div class="thumbnail"><a class="text-secondary" href="https://missav.fans/dm4448/cn/genres/%E5%A5%B3%E9%AB%98%E4%B8%AD%E7%94%9F">女高中生</a></div>
 <a class="text-secondary" href="https://evil.example/cn/abcd-999">外部</a>
 <link rel="next" href="?page=2">`;
-const detailHtml = `<meta property="og:title" content="SSIS-001 标题"><meta property="og:description" content="简介">
+const detailHtml = `<script src="/cdn-cgi/challenge-platform/scripts/jsd/main.js"></script><meta property="og:title" content="SSIS-001 标题"><meta property="og:description" content="简介">
 <script>eval(function(p,a,c,k,e,d){return p}('0://1.2/3/4.m3u8',36,5,'https|surrit|example|aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee|playlist'.split('|'))))</script>`;
 const master = `#EXTM3U
 #EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=1280x720
@@ -56,6 +56,14 @@ test("missav modules stay bounded and omit the schoolgirl genre", async () => {
   assert.equal(page.items[1].cover, "https://fourhoi.mrstcdn.store/mide-002/cover-t.jpg");
   assert.equal(page.hasMore, true);
   assert.deepEqual(urls, ["https://missav.fans/dm539/cn/new?sort=published_at"]);
+});
+
+test("a challenge interstitial does not become a catalog", async () => {
+  const html = `<title>Just a moment...</title><script src="/cdn-cgi/challenge-platform/orchestrate/chl_page/v1"></script>`;
+  const {nshort, urls} = load(() => html);
+  const page = await nshort.catalog({page: 1});
+  assert.equal(page.items.length, 0);
+  assert.equal(urls.length, 4);
 });
 
 test("unknown category and empty search do not become open urls", async () => {

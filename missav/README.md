@@ -1,6 +1,6 @@
 # MissAV 源插件
 
-版本：1.0.0。由 N果现有 `examples/plugins/missav.js` 原样同步，采用 N果 JS 插件接口和模块分类。
+版本：1.0.1。由 N果现有 `examples/plugins/missav.js` 原样同步，采用 N果 JS 插件接口和模块分类。
 
 导入地址：
 

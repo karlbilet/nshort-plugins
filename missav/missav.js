@@ -1,4 +1,4 @@
-// @nshort {"id":"missav","name":"MissAV","version":"1.0.0","hosts":["missav.fans","missav.media","missav.ai","missav.ws","*.mrstcdn.store","fourhoi.com"]}
+// @nshort {"id":"missav","name":"MissAV","version":"1.0.1","hosts":["missav.fans","missav.media","missav.ai","missav.ws","*.mrstcdn.store","fourhoi.com"]}
 // N果 rewrite of the TuT MissAV module. One genre whose title targets schoolgirls is omitted.
 const SITES = ["https://missav.fans", "https://missav.media", "https://missav.ai", "https://missav.ws"];
 const UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1";
@@ -200,7 +200,12 @@ function listPath(entry, page) {
 }
 function blocked(html) {
   const text = String(html || "");
-  return !text || /Just a moment|cf-browser-verification|challenge-platform|Attention Required/i.test(text);
+  if (!text) return true;
+  const hasContent = text.indexOf("text-secondary") >= 0 || text.indexOf("thumbnail") >= 0 || text.indexOf("fourhoi") >= 0 || text.indexOf("surrit") >= 0 || text.indexOf("og:title") >= 0;
+  if (hasContent && text.length > 12000) return false;
+  if (/<title[^>]*>\s*(just a moment|attention required|please wait)/i.test(text)) return true;
+  const lower = text.toLowerCase();
+  return text.length < 20000 && (lower.indexOf("verify you are human") >= 0 || lower.indexOf("performing security verification") >= 0 || lower.indexOf("checking your browser before accessing") >= 0 || text.indexOf("cf-browser-verification") >= 0);
 }
 function usable(html) {
   if (blocked(html)) return false;
